@@ -4,7 +4,6 @@ package com.baranauskas.lithuanianPoker;
  * Created by Administrator on 2017.11.15.
  */
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -92,7 +91,7 @@ public class Game extends AppCompatActivity {
                     break;
                 }
             }
-            allCards[y].occupied = true;
+            allCards[y].setOccupied();
         }
     }
 

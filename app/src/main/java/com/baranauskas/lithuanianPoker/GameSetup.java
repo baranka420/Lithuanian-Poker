@@ -109,18 +109,10 @@ public class GameSetup extends AppCompatActivity {
                     for(int i = 0; i < playerCount; i++){
                         playerNames += players[i].getPlayerName();
                         playerNames += (i==playerNumber-1) ? "" : ",";
-                        //playerNames += ",";
                     }
                     createGameActivity(playerCount, playerNames);
 
                 }
-                /*
-                displayPlayerCount.setText(Integer.toString(playerCount));
-                Card[] cardz = players[0].getPlayerCards().clone();
-                displayCardSuits.setText(cardz[0].cardSuit);
-                displayPlayerName.setText(players[0].getPlayerName());
-                */
-                //setContentView(R.layout.activity_game);
             }
         }
     }
@@ -154,15 +146,9 @@ public class GameSetup extends AppCompatActivity {
     }
     public void createGameActivity(int number, String playerNames){
         Intent startGameIntent = new Intent(this, Game.class);
-        //playerCountIntent.putExtra("playerCount", number);
-        //startActivity(playerCountIntent);
-        //Intent playerNamesIntent = new Intent(this, Game.class);
-        //playerNamesIntent.putExtra("playerNames", playerNames);
         startGameIntent.putExtra("playerCount", number);
         startGameIntent.putExtra("playerNames", playerNames);
         startActivity(startGameIntent);
     }
 
 }
-
-
