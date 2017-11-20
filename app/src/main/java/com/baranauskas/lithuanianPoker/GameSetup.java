@@ -11,7 +11,7 @@ import android.content.Intent;
 
 
 public class GameSetup extends AppCompatActivity {
-    TextView displayPlayerCount;
+    TextView display;
     EditText playerCountInput;
     Button confirmPlayerCountButton;
     Button confirmPlayerNameButton;
@@ -38,16 +38,15 @@ public class GameSetup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_setup);
-        displayPlayerCount = (TextView) findViewById(R.id.displayPlayerCount);
-        displayCardSuits = (TextView) findViewById(R.id.displayCardSuits);
-        displayPlayerName = (TextView) findViewById(R.id.displayPlayerName);
+        display = (TextView) findViewById(R.id.display);
         playerCountInput = (EditText) findViewById(R.id.playerCountInput);
         playerNameInput = (EditText) findViewById(R.id.playerNameInput);
         confirmPlayerCountButton = (Button) findViewById(R.id.confirmCountButton);
         confirmPlayerNameButton = (Button) findViewById(R.id.confirmNameButton);
         confirmPlayerNameButton.setVisibility(View.INVISIBLE);
-        playerCountInput.setText("enter number of players", TextView.BufferType.EDITABLE);
-        playerNameInput.setText("enter player name", TextView.BufferType.EDITABLE);
+        display.setText("Enter number of players:");
+        //playerCountInput.setText("enter number of players", TextView.BufferType.EDITABLE);
+        //playerNameInput.setText("enter player name", TextView.BufferType.EDITABLE);
         playerNameInput.setVisibility(View.INVISIBLE);
         confirmPlayerCountButton.setOnClickListener(new AddPlayerCount());
         confirmPlayerNameButton.setOnClickListener(new AddPlayerName());
@@ -58,7 +57,6 @@ public class GameSetup extends AppCompatActivity {
             cards[x] = new Card(cardId, giveSuitsNameById(cardSuitsId));
         }
         player1 = new Player("asshole", cards, cardCount);
-        System.out.println(player1.getPlayerName());
     }
 
     protected String giveSuitsNameById(int id){
@@ -104,8 +102,6 @@ public class GameSetup extends AppCompatActivity {
                             players[x].playerCards[y].cardNameID = (minId + (int) (Math.random() * ((maxId - minId) + 1)));
                         }
                     }
-                    displayPlayerName.setText(players[0].getPlayerName());
-                    displayCardSuits.setText(players[0].playerCards[0].cardSuit);
                     for(int i = 0; i < playerCount; i++){
                         playerNames += players[i].getPlayerName();
                         playerNames += (i==playerNumber-1) ? "" : ",";
@@ -130,6 +126,7 @@ public class GameSetup extends AppCompatActivity {
                     confirmPlayerCountButton.setVisibility(View.INVISIBLE);
                     playerNameInput.setVisibility(View.VISIBLE);
                     playerCountInput.setVisibility(View.INVISIBLE);
+                    display.setText("Enter player name:");
                 }
             }
         }

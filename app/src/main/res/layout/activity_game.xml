@@ -26,7 +26,17 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.54" />
+        app:layout_constraintVertical_bias="0.548" />
+
+    <Spinner
+        android:id="@+id/pickCombinationSpinner2"
+        android:layout_width="344dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.716" />
 
     <TextView
         android:id="@+id/firstCard"
@@ -134,4 +144,5 @@
         android:text="TextView"
         app:layout_constraintVertical_bias="0.623"
         app:layout_constraintHorizontal_bias="0.341" />
+
 </android.support.constraint.ConstraintLayout>
