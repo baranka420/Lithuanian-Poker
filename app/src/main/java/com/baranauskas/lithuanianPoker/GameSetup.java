@@ -25,7 +25,7 @@ public class GameSetup extends AppCompatActivity {
     int playerCount = 0;
     int cardCount = 1;
     int playerNumber = 0;
-    final int maxPlayerCount = 5;
+    final int maxPlayerCount = 6;
     boolean conflictingName = false;
     String playerName = null;
     String playerNames ="";
@@ -56,7 +56,6 @@ public class GameSetup extends AppCompatActivity {
             int cardSuitsId = minSuitsId + (int)(Math.random() * ((maxSuitsId - minSuitsId) + 1));
             cards[x] = new Card(cardId, giveSuitsNameById(cardSuitsId));
         }
-        player1 = new Player("asshole", cards, cardCount);
     }
 
     protected String giveSuitsNameById(int id){
@@ -98,8 +97,8 @@ public class GameSetup extends AppCompatActivity {
                 if(playerNumber == playerCount) {
                     for(int x = 0; x < playerCount; x++) {
                         for (int y = 0; y < players[x].getCardCount(); y++) {
-                            players[x].playerCards[y].cardSuit = giveSuitsNameById(minSuitsId + (int) (Math.random() * ((maxSuitsId - minSuitsId) + 1)));
-                            players[x].playerCards[y].cardNameID = (minId + (int) (Math.random() * ((maxId - minId) + 1)));
+                            //players[x].playerCards[y].cardSuit = giveSuitsNameById(minSuitsId + (int) (Math.random() * ((maxSuitsId - minSuitsId) + 1)));
+                            //players[x].playerCards[y].cardNameID = (minId + (int) (Math.random() * ((maxId - minId) + 1)));
                         }
                     }
                     for(int i = 0; i < playerCount; i++){

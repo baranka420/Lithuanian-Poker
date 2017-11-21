@@ -13,18 +13,21 @@ import android.widget.Spinner;
 import android.content.Intent;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class Game extends AppCompatActivity {
     Button takeTurnButton;
     Spinner pickCombinationSpinner;
     TextView firstCard, secondCard, thirdCard, fourthCard, nameDisplay;
     ImageView iv1, iv2, iv3, iv4;
-    Drawable drawale;
+    Drawable myDrawable;
     private ImageView[] images = new ImageView[4];
     private TextView[] cardTexts = new TextView[4];
     final int minSuitsId = 0;
     final int maxSuitsId = 3;
     final int minId = 9;
     final int maxId = 14;
+    int index = 0;
     int playerCount;
     int cardCount = 4;
     int playerTurn = 0;
@@ -33,7 +36,8 @@ public class Game extends AppCompatActivity {
     Player[] players;
     String[] playerNamesArray;
     AllCards[] allCards;
-    private String[] arraySpinner;
+    ArrayList<Combination> allCombinations = new ArrayList<>();
+    //private String[] arraySpinner;
 
 
     @Override
@@ -65,7 +69,9 @@ public class Game extends AppCompatActivity {
         playerNamesArray = playerNames.split(",");
         allCards = new AllCards[24];
         players = new Player[playerCount];
-        takeTurnButton.setOnClickListener(new takeTurn());
+        //takeTurnButton.setOnClickListener(new takeTurn());
+        createCombinations();
+
         int i = 0;
         for (int x = minId; x < maxId+1; x++) {
             for(int y = minSuitsId; y < maxSuitsId+1; y++){
@@ -77,7 +83,6 @@ public class Game extends AppCompatActivity {
             cards[x] = new Card(minId, giveSuitsNameById(minSuitsId));
         }
 
-        //showPlayerView(playerTurn);
         playGame();
     }
 
@@ -122,10 +127,9 @@ public class Game extends AppCompatActivity {
         for(int x = 0; x < players[playerTurn].cardCount; x++){
             String name = "a" + Integer.toString(players[playerTurn].playerCards[x].cardNameID) + "_of_" + players[playerTurn].playerCards[x].cardSuit;
             int id = getResources().getIdentifier(name, "drawable", getPackageName());
-            drawale = getResources().getDrawable(id);
-            images[x].setImageDrawable(drawale);
+            myDrawable = getResources().getDrawable(id);
+            images[x].setImageDrawable(myDrawable);
             cardTexts[x].setText(players[playerTurn].playerCards[x].cardSuit + players[playerTurn].playerCards[x].cardNameID);
-
 
         }
     }
@@ -146,10 +150,8 @@ public class Game extends AppCompatActivity {
             players[x] = new Player(playerNamesArray[x], cards, cardCount);
             dealCards(x);
         }
-        //while(playerCount != 1){
             showPlayerView(playerTurn);
 
-        //}
     }
 
     public boolean checkHighCard(int cardId){
@@ -322,7 +324,7 @@ public class Game extends AppCompatActivity {
             return  false;
         }
     }
-
+/*
     private class takeTurn implements Button.OnClickListener{
         @Override
         public void onClick(View v) {
@@ -330,6 +332,15 @@ public class Game extends AppCompatActivity {
             }
 
         }
+*/
 
+public void createCombinations(){
+    createHighCardCombinations(index);
+}
+
+public void createHighCardCombinations(int id){
+    int combinationValue = 10;
+    allCombinations.add(id, new Combination(combinationValue+id, "High-card " + getCombinationName()));
+}
 
 }
