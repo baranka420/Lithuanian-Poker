@@ -336,11 +336,175 @@ public class Game extends AppCompatActivity {
 
 public void createCombinations(){
     createHighCardCombinations(index);
+    createPairCombinations(index);
+    createTwoPairCombinations(index);
+    createThreeOfAKindCombinations(index);
+    createStraightCombinations(index);
+    createFlushCombinations(index);
+    createFullHouseCombinations(index);
+    createFourOfAKindCombinations(index);
+    createStraightFlushCombinations(index);
 }
 
 public void createHighCardCombinations(int id){
     int combinationValue = 10;
-    allCombinations.add(id, new Combination(combinationValue+id, "High-card " + getCombinationName()));
+    for(int x = 0; x < 6; x++) {
+        allCombinations.add(id, new Combination(combinationValue + id, "High-card " + getCombinationName("High-card", x)));
+        id++;
+    }
+}
+
+public void createPairCombinations(int id){
+    int combinationValue = 100;
+    for(int x = 0; x < 6; x++) {
+        allCombinations.add(id, new Combination(combinationValue + id, "Pair of " + getCombinationName("Pair", x)));
+        id++;
+    }
+}
+
+public void createTwoPairCombinations(int id){
+    int combinationValue = 1000;
+    for(int x = 0; x < 6; x++) {
+        for(int y = x+1; y < 6; y++){
+            allCombinations.add(id, new Combination(combinationValue + id, "Two-pair of " + getCombinationName("Two-pair", x) + " and " + getCombinationName("Two-pair", y)));
+            id++;
+        }
+    }
+}
+
+public void createThreeOfAKindCombinations(int id){
+    int combinationValue = 10000;
+    for(int x = 0; x < 6; x++) {
+        allCombinations.add(id, new Combination(combinationValue + id, "Three of " + getCombinationName("Three of", x)));
+        id++;
+    }
+}
+
+public void createStraightCombinations(int id){
+    int combinationValue = 100000;
+    allCombinations.add(id, new Combination(combinationValue + id, "Straight from " + getCombinationName("Straight from", 0)));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue + id, "Straight from " + getCombinationName("Straight from", 1)));
+    id++;
+}
+
+public void createFlushCombinations(int id){
+    int combinationValue = 1000000;
+    allCombinations.add(id, new Combination(combinationValue, "Flush of Diamonds"));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue, "Flush of Spades"));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue, "Flush of hearts"));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue, "Flush of Clubs"));
+    id++;
+}
+
+public void createFullHouseCombinations(int id){
+    int combinationValue = 10000000;
+    for(int x = 0; x < 6; x++) {
+        for(int y = 0; y < 6; y++){
+            if(x != y){
+                allCombinations.add(id, new Combination(combinationValue + id, "Full House of three " + getCombinationName("Full house", x) + " and two " + getCombinationName("Full house", y)));
+                id++;
+            }
+        }
+    }
+}
+
+public  void createFourOfAKindCombinations(int id){
+    int combinationValue = 100000000;
+    for(int x = 0; x < 6; x++) {
+        allCombinations.add(id, new Combination(combinationValue + id, "Four of " + getCombinationName("Four of", x)));
+        id++;
+    }
+}
+
+public void createStraightFlushCombinations(int id){
+    int combinationValue = 1000000000;
+    allCombinations.add(id, new Combination(combinationValue, "Straight Flush of Diamonds from " + getCombinationName("Straight flush", 0)));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue, "Straight Flush of Spades from " + getCombinationName("Straight flush", 0)));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue, "Straight Flush of hearts from " + getCombinationName("Straight flush", 0)));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue, "Straight Flush of Clubs from " + getCombinationName("Straight flush", 0)));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue + 1, "Straight Flush of Diamonds from " + getCombinationName("Straight flush", 1)));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue + 1, "Straight Flush of Spades from " + getCombinationName("Straight flush", 1)));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue + 1, "Straight Flush of hearts from " + getCombinationName("Straight flush", 1)));
+    id++;
+    allCombinations.add(id, new Combination(combinationValue + 1, "Straight Flush of Clubs from " + getCombinationName("Straight flush", 1)));
+    id++;
+}
+
+public String getCombinationName(String tag, int number){
+    String ending;
+    if(tag == "High-card"){
+        switch (number) {
+            case 0:
+                ending = "Nine";
+                break;
+            case 1:
+                ending = "Ten";
+                break;
+            case 2:
+                ending = "Jack";
+                break;
+            case 3:
+                ending = "Queen";
+                break;
+            case 4:
+                ending = "King";
+                break;
+            case 5:
+                ending = "Ace";
+                break;
+            default:
+                break;
+        }
+        return ending;
+    }else if(tag == "Three of" || tag == "Two-pair" || tag == "Pair" || tag == "Full house" || tag == "Four of"){
+        switch (number) {
+            case 0:
+                ending = "Nines";
+                break;
+            case 1:
+                ending = "Tens";
+                break;
+            case 2:
+                ending = "Jacks";
+                break;
+            case 3:
+                ending = "Queens";
+                break;
+            case 4:
+                ending = "Kings";
+                break;
+            case 5:
+                ending = "Aces";
+                break;
+            default:
+                break;
+        }
+        return ending;
+    }else if(tag == "Straight from" || tag == "Straight flush"){
+        switch (number) {
+            case 0:
+                ending = "Nine";
+                break;
+            case 1:
+                ending = "Ten";
+                break;
+            default:
+                break;
+        }
+        return ending;
+    }else{
+        return "getCombinationNameDidntFindAName ";
+    }
 }
 
 }
