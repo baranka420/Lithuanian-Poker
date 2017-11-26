@@ -15,7 +15,6 @@ import java.util.List;
 
 public class GameSetup extends AppCompatActivity {
     TextView display;
-    EditText playerCountInput;
     Button confirmPlayerCountButton;
     Button confirmPlayerNameButton;
     TextView playerNameInput;
@@ -41,7 +40,6 @@ public class GameSetup extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_setup);
         display = (TextView) findViewById(R.id.display);
-        playerCountInput = (EditText) findViewById(R.id.playerCountInput);
         playerNameInput = (EditText) findViewById(R.id.playerNameInput);
         confirmPlayerCountButton = (Button) findViewById(R.id.confirmCountButton);
         confirmPlayerNameButton = (Button) findViewById(R.id.confirmNameButton);
@@ -111,7 +109,6 @@ public class GameSetup extends AppCompatActivity {
                         playerNames += (i==playerNumber-1) ? "" : ",";
                     }
                     createGameActivity(playerCount, playerNames);
-
                 }
             }
         }
@@ -143,20 +140,10 @@ public class GameSetup extends AppCompatActivity {
             confirmPlayerNameButton.setVisibility(View.VISIBLE);
             confirmPlayerCountButton.setVisibility(View.INVISIBLE);
             playerNameInput.setVisibility(View.VISIBLE);
-            playerCountInput.setVisibility(View.INVISIBLE);
             display.setText("Enter player name:");
         }
     }
 
-    /*public static boolean isNumeric(String str){
-        try{
-            double d = Double.parseDouble(str);
-        }
-        catch(NumberFormatException nfe){
-            return false;
-        }
-        return true;
-    }*/
     public void createGameActivity(int number, String playerNames){
         Intent startGameIntent = new Intent(this, Game.class);
         startGameIntent.putExtra("playerCount", number);

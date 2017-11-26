@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.content.Intent;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,8 +88,13 @@ public class Game extends AppCompatActivity {
                 pickCombinationSpinner2.setAdapter(null);
                 myArraySpinner2 = new ArrayList<String>();
                 for(int x = 0; x < allCombinations.size(); x++){
-                    if(allCombinations.get(x).getValue() > currentCombinationValue){
+                    if(allCombinations.get(x).getValue() > currentCombinationValue && allCombinations.get(x).getValue() < currentCombinationValue*10){
                         myArraySpinner2.add(allCombinations.get(x).getName());
+                    }
+                    if(currentCombinationValue == 0){
+                        if(allCombinations.get(x).getValue() > allCombinations.get(combinationSelected).getValue()-1 && allCombinations.get(x).getValue() < (allCombinations.get(combinationSelected).getValue()-1)*10){
+                            myArraySpinner2.add(allCombinations.get(x).getName());
+                        }
                     }
                 }
                 afterItemSelected();
@@ -104,7 +108,12 @@ public class Game extends AppCompatActivity {
         pickCombinationSpinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                        combinationSelected = position;
+                        //combinationSelected = position;
+                for(int x = 0; x < allCombinations.size(); x++){
+                    if(allCombinations.get(x).getName() == myArraySpinner2.get(position)){
+                        combinationSelected = x;
+                    }
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -176,7 +185,7 @@ public class Game extends AppCompatActivity {
             images[x].setImageDrawable(myDrawable);
             cardTexts[x].setText(players[playerTurn].playerCards[x].cardSuit + players[playerTurn].playerCards[x].cardNameID);
         }
-
+cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
     }
     public void setNextTurn(int currentTurn){
         while(true){
@@ -217,7 +226,7 @@ public class Game extends AppCompatActivity {
                         if(currentCombinationValue < 100001){
                             myArraySpinner.add("Straight");
                         }
-                            if(currentCombinationValue < 1000003){
+                            if(currentCombinationValue < 1000000){
                                 myArraySpinner.add("Flush");
                             }
                                 if(currentCombinationValue < 10000014) {
