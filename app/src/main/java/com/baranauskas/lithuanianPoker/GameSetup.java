@@ -1,13 +1,16 @@
 package com.baranauskas.lithuanianPoker;
 
-
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.content.Intent;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GameSetup extends AppCompatActivity {
@@ -15,9 +18,8 @@ public class GameSetup extends AppCompatActivity {
     EditText playerCountInput;
     Button confirmPlayerCountButton;
     Button confirmPlayerNameButton;
-    TextView displayCardSuits;
     TextView playerNameInput;
-    TextView displayPlayerName;
+    Spinner playerCountSpinner;
     final int minSuitsId = 0;
     final int maxSuitsId = 3;
     final int minId = 9;
@@ -30,8 +32,8 @@ public class GameSetup extends AppCompatActivity {
     String playerName = null;
     String playerNames ="";
     Card []cards = new Card[cardCount];
-    Player player1;
     Player[] players;
+    List<String> myArraySpinner = new ArrayList<String>();
 
 
     @Override
@@ -45,9 +47,17 @@ public class GameSetup extends AppCompatActivity {
         confirmPlayerNameButton = (Button) findViewById(R.id.confirmNameButton);
         confirmPlayerNameButton.setVisibility(View.INVISIBLE);
         display.setText("Enter number of players:");
-        //playerCountInput.setText("enter number of players", TextView.BufferType.EDITABLE);
-        //playerNameInput.setText("enter player name", TextView.BufferType.EDITABLE);
         playerNameInput.setVisibility(View.INVISIBLE);
+        playerCountSpinner = (Spinner) findViewById(R.id.playerCountSpinner);
+        myArraySpinner.add("2");
+        myArraySpinner.add("3");
+        myArraySpinner.add("4");
+        myArraySpinner.add("5");
+        myArraySpinner.add("6");
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, myArraySpinner);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        playerCountSpinner.setAdapter(adapter);
         confirmPlayerCountButton.setOnClickListener(new AddPlayerCount());
         confirmPlayerNameButton.setOnClickListener(new AddPlayerName());
 
@@ -79,6 +89,7 @@ public class GameSetup extends AppCompatActivity {
         }
         return suitsId;
     }
+
     private class AddPlayerName implements Button.OnClickListener{
         @Override
         public void onClick(View v) {
@@ -95,12 +106,6 @@ public class GameSetup extends AppCompatActivity {
                 players[playerNumber] = new Player(playerName, cards, cardCount);
                 playerNumber++;
                 if(playerNumber == playerCount) {
-                    for(int x = 0; x < playerCount; x++) {
-                        for (int y = 0; y < players[x].getCardCount(); y++) {
-                            //players[x].playerCards[y].cardSuit = giveSuitsNameById(minSuitsId + (int) (Math.random() * ((maxSuitsId - minSuitsId) + 1)));
-                            //players[x].playerCards[y].cardNameID = (minId + (int) (Math.random() * ((maxId - minId) + 1)));
-                        }
-                    }
                     for(int i = 0; i < playerCount; i++){
                         playerNames += players[i].getPlayerName();
                         playerNames += (i==playerNumber-1) ? "" : ",";
@@ -115,23 +120,35 @@ public class GameSetup extends AppCompatActivity {
     private class AddPlayerCount implements Button.OnClickListener{
         @Override
         public void onClick(View v){
-            String checkInt = playerCountInput.getText().toString();
-            if (isNumeric(checkInt)) {
-                if(Integer.parseInt(checkInt) > maxPlayerCount || Integer.parseInt(checkInt) < 2) {
-                }else{
-                    playerCount = Integer.parseInt(checkInt);
-                    players = new Player[playerCount];
-                    confirmPlayerNameButton.setVisibility(View.VISIBLE);
-                    confirmPlayerCountButton.setVisibility(View.INVISIBLE);
-                    playerNameInput.setVisibility(View.VISIBLE);
-                    playerCountInput.setVisibility(View.INVISIBLE);
-                    display.setText("Enter player name:");
-                }
+            switch (playerCountSpinner.getSelectedItem().toString()){
+                case "2":
+                    playerCount = 2;
+                    break;
+                case "3":
+                    playerCount = 3;
+                    break;
+                case "4":
+                    playerCount = 4;
+                    break;
+                case "5":
+                    playerCount = 5;
+                    break;
+                case "6":
+                    playerCount = 6;
+                    break;
+                default:
+                    break;
             }
+            players = new Player[playerCount];
+            confirmPlayerNameButton.setVisibility(View.VISIBLE);
+            confirmPlayerCountButton.setVisibility(View.INVISIBLE);
+            playerNameInput.setVisibility(View.VISIBLE);
+            playerCountInput.setVisibility(View.INVISIBLE);
+            display.setText("Enter player name:");
         }
     }
 
-    public static boolean isNumeric(String str){
+    /*public static boolean isNumeric(String str){
         try{
             double d = Double.parseDouble(str);
         }
@@ -139,7 +156,7 @@ public class GameSetup extends AppCompatActivity {
             return false;
         }
         return true;
-    }
+    }*/
     public void createGameActivity(int number, String playerNames){
         Intent startGameIntent = new Intent(this, Game.class);
         startGameIntent.putExtra("playerCount", number);
