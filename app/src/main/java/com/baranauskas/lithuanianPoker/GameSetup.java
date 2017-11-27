@@ -100,7 +100,7 @@ public class GameSetup extends AppCompatActivity {
                     }
                 }
             }
-            if(playerName != "enter player name" && playerName.length() < 20 && !conflictingName) {
+            if(playerName != "enter player name" && playerName.length() < 20 && playerName.length() > 1 && !conflictingName) {
                 players[playerNumber] = new Player(playerName, cards, cardCount);
                 playerNumber++;
                 if(playerNumber == playerCount) {

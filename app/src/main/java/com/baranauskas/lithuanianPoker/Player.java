@@ -9,7 +9,8 @@ public class Player {
     public Card []playerCards;
     public int cardCount;
     public boolean isEliminated = false;
-    public Player(String name, Card cards[], int number){
+
+    public Player(String name, Card []cards, int number){
         this.playerName = name;
         this.playerCards = cards.clone();
         this.cardCount = number;

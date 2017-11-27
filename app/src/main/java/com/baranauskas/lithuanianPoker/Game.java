@@ -33,13 +33,14 @@ public class Game extends AppCompatActivity {
     final int maxId = 14;
     int index = 0;
     int playerCount;
-    int cardCount = 1;
+    int cardCount = 4;
     int playerTurn = 0;
     int currentCombinationValue = 0;
     int combinationSelected;
     String playerNames;
     String currentCombinationName;
-    Card[] cards = new Card[cardCount];
+    //Card[] cards = new Card[4];
+    //Card[] cards2 = new Card[4];
     Player[] players;
     String[] playerNamesArray;
     AllCards[] allCards;
@@ -80,7 +81,6 @@ public class Game extends AppCompatActivity {
         players = new Player[playerCount];
         takeTurnButton.setOnClickListener(new TakeTurn());
         createCombinations();
-
 
         pickCombinationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -128,12 +128,24 @@ public class Game extends AppCompatActivity {
                 i++;
             }
         }
-        for(int x = 0; x < cardCount; x++){
-            cards[x] = new Card(minId, giveSuitsNameById(minSuitsId));
+        Card [][]cardsArray = new Card[playerCount][];
+        for(int y = 0; y < playerCount; y++){
+            cardsArray[y] = new Card[4];
+            for(int x = 0; x < 4; x++){
+                cardsArray[y][x] = new Card(0, "");
+            }
         }
+        /*
         for(int x = 0; x < playerCount; x++) {
             players[x] = new Player(playerNamesArray[x], cards, cardCount);
         }
+        for(int x = 0; x < 4; x++){
+            cards2[x] = new Card(0, "");
+        }*/
+        for(int x = 0; x < playerCount; x++) {
+            players[x] = new Player(playerNamesArray[x], cardsArray[x], cardCount);
+        }
+
         playGame();
     }
 
@@ -141,13 +153,17 @@ public class Game extends AppCompatActivity {
     public void dealCards(int playerNumber){
         for (int y = 0; y < players[playerNumber].getCardCount(); y++) {
             players[playerNumber].playerCards[y].cardSuit = giveSuitsNameById(minSuitsId + (int) (Math.random() * ((maxSuitsId - minSuitsId) + 1)));
+            //players[playerNumber].playerCards[y].cardSuit = "hearts";
             players[playerNumber].playerCards[y].cardNameID = minId + (int) (Math.random() * ((maxId - minId) + 1));
             for(int x = 0; x < allCards.length; x++){
                 if(allCards[x].cardId == players[playerNumber].playerCards[y].cardNameID && allCards[x].cardSuit == players[playerNumber].playerCards[y].cardSuit && allCards[x].occupied()){
-                    y-=1;
+                    if(y != 0){
+                        y-=1;
+                    }
                     break;
                 }else if(allCards[x].cardId == players[playerNumber].playerCards[y].cardNameID && allCards[x].cardSuit == players[playerNumber].playerCards[y].cardSuit && !allCards[x].occupied()){
                     allCards[x].setOccupied();
+                    break;
                 }
             }
         }
@@ -187,6 +203,7 @@ public class Game extends AppCompatActivity {
         }
 cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
     }
+
     public void setNextTurn(int currentTurn){
         while(true){
             if(currentTurn + 1 > playerCount - 1){
@@ -201,6 +218,7 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
             }
         }
     }
+
     public void afterItemSelected(){
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(
                 this, android.R.layout.simple_spinner_item, myArraySpinner2);
@@ -244,17 +262,23 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
         pickCombinationSpinner.setAdapter(adapter);
     }
 
-    public void playGame(){
+    public void playGame() {
 
-        for(int x = 0; x < allCards.length; x++){
+        for (int x = 0; x < allCards.length; x++) {
             allCards[x].occupied = false;
         }
-        for(int x = 0; x < playerCount; x++) {
-            if(!players[x].isEliminated()){
+        for (int x = 0; x < playerCount; x++) {
+            if (!players[x].isEliminated()) {
                 dealCards(x);
             }
-        }
+/*for(int x = 0; x < playerCount; x++){
+    for(int y = 0; y < players[x].getCardCount(); y++){
+        players[x].playerCards[y].cardSuit = "spades";
+        players[x].playerCards[y].cardNameID = 9+x*y+y;
+    }
+}*/
             showPlayerView();
+        }
     }
 
     public boolean checkHighCard(int cardId){
@@ -620,7 +644,7 @@ public String getCombinationName(String tag, int number){
             currentCombinationValue = allCombinations.get(combinationSelected).getValue();
             currentCombinationName = allCombinations.get(combinationSelected).getName();
             setNextTurn(playerTurn);
-            showPlayerView(); // add currentCombinationValue and currentCombinationName to this and show them to on textview
+            showPlayerView(); // add currentCombinationValue and currentCombinationName to this and show them on textview
 
         }
     }
