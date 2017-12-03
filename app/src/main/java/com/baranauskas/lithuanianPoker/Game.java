@@ -20,6 +20,7 @@ import java.util.List;
 
 public class Game extends AppCompatActivity {
     Button takeTurnButton;
+    Button checkButton;
     Spinner pickCombinationSpinner;
     Spinner pickCombinationSpinner2;
     TextView firstCard, secondCard, thirdCard, fourthCard, nameDisplay;
@@ -33,14 +34,13 @@ public class Game extends AppCompatActivity {
     final int maxId = 14;
     int index = 0;
     int playerCount;
-    int cardCount = 4;
+    int cardCount = 1;
     int playerTurn = 0;
+    int combinationChosenBy;
     int currentCombinationValue = 0;
     int combinationSelected;
     String playerNames;
-    String currentCombinationName;
-    //Card[] cards = new Card[4];
-    //Card[] cards2 = new Card[4];
+    String currentCombinationName = null;
     Player[] players;
     String[] playerNamesArray;
     AllCards[] allCards;
@@ -54,6 +54,7 @@ public class Game extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         takeTurnButton = (Button) findViewById(R.id.takeTurnButton);
+        checkButton = (Button) findViewById(R.id.checkButton);
         pickCombinationSpinner = (Spinner) findViewById(R.id.pickCombinationSpinner);
         pickCombinationSpinner2= (Spinner) findViewById(R.id.pickCombinationSpinner2);
         firstCard = (TextView) findViewById(R.id.firstCard);
@@ -80,6 +81,7 @@ public class Game extends AppCompatActivity {
         allCards = new AllCards[24];
         players = new Player[playerCount];
         takeTurnButton.setOnClickListener(new TakeTurn());
+        checkButton.setOnClickListener(new CheckCombination());
         createCombinations();
 
         pickCombinationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -153,7 +155,6 @@ public class Game extends AppCompatActivity {
     public void dealCards(int playerNumber){
         for (int y = 0; y < players[playerNumber].getCardCount(); y++) {
             players[playerNumber].playerCards[y].cardSuit = giveSuitsNameById(minSuitsId + (int) (Math.random() * ((maxSuitsId - minSuitsId) + 1)));
-            //players[playerNumber].playerCards[y].cardSuit = "hearts";
             players[playerNumber].playerCards[y].cardNameID = minId + (int) (Math.random() * ((maxId - minId) + 1));
             for(int x = 0; x < allCards.length; x++){
                 if(allCards[x].cardId == players[playerNumber].playerCards[y].cardNameID && allCards[x].cardSuit == players[playerNumber].playerCards[y].cardSuit && allCards[x].occupied()){
@@ -271,12 +272,6 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
             if (!players[x].isEliminated()) {
                 dealCards(x);
             }
-/*for(int x = 0; x < playerCount; x++){
-    for(int y = 0; y < players[x].getCardCount(); y++){
-        players[x].playerCards[y].cardSuit = "spades";
-        players[x].playerCards[y].cardNameID = 9+x*y+y;
-    }
-}*/
             showPlayerView();
         }
     }
@@ -467,8 +462,11 @@ public void createCombinations(){
 
 public void createHighCardCombinations(int id){
     int combinationValue = 10;
+    int firstCombinationNumber = 9;
+    int secondCombinationNumber = 0;
+    String combinationSuits = "";
     for(int x = 0; x < 6; x++) {
-        allCombinations.add(index, new Combination(combinationValue + id, "High-card " + getCombinationName("High-card", x)));
+        allCombinations.add(index, new Combination(combinationValue + id, "High-card " + getCombinationName("High-card", x), firstCombinationNumber+x, secondCombinationNumber, combinationSuits));
         index++;
         id++;
     }
@@ -476,8 +474,11 @@ public void createHighCardCombinations(int id){
 
 public void createPairCombinations(int id){
     int combinationValue = 100;
+    int firstCombinationNumber = 9;
+    int secondCombinationNumber = 0;
+    String combinationSuits = "";
     for(int x = 0; x < 6; x++) {
-        allCombinations.add(index, new Combination(combinationValue + id, "Pair of " + getCombinationName("Pair", x)));
+        allCombinations.add(index, new Combination(combinationValue + id, "Pair of " + getCombinationName("Pair", x), firstCombinationNumber+x, secondCombinationNumber, combinationSuits));
         index++;
         id++;
     }
@@ -485,9 +486,12 @@ public void createPairCombinations(int id){
 
 public void createTwoPairCombinations(int id){
     int combinationValue = 1000;
+    int firstCombinationNumber = 9;
+    int secondCombinationNumber = 9;
+    String combinationSuits = "";
     for(int x = 0; x < 6; x++) {
         for(int y = x+1; y < 6; y++){
-            allCombinations.add(index, new Combination(combinationValue + id, "Two-pair of " + getCombinationName("Two-pair", x) + " and " + getCombinationName("Two-pair", y)));
+            allCombinations.add(index, new Combination(combinationValue + id, "Two-pair of " + getCombinationName("Two-pair", x) + " and " + getCombinationName("Two-pair", y), firstCombinationNumber+x, secondCombinationNumber+y, combinationSuits));
             index++;
             id++;
         }
@@ -496,8 +500,11 @@ public void createTwoPairCombinations(int id){
 
 public void createThreeOfAKindCombinations(int id){
     int combinationValue = 10000;
+    int firstCombinationNumber = 9;
+    int secondCombinationNumber = 0;
+    String combinationSuits = "";
     for(int x = 0; x < 6; x++) {
-        allCombinations.add(index, new Combination(combinationValue + id, "Three of " + getCombinationName("Three of", x)));
+        allCombinations.add(index, new Combination(combinationValue + id, "Three of " + getCombinationName("Three of", x), firstCombinationNumber+x, secondCombinationNumber, combinationSuits));
         index++;
         id++;
     }
@@ -505,32 +512,44 @@ public void createThreeOfAKindCombinations(int id){
 
 public void createStraightCombinations(int id){
     int combinationValue = 100000;
-    allCombinations.add(index, new Combination(combinationValue + id, "Straight from " + getCombinationName("Straight from", 0)));
+    int firstCombinationNumber = 9;
+    int secondCombinationNumber = 0;
+    String combinationSuits = "";
+    allCombinations.add(index, new Combination(combinationValue + id, "Straight from " + getCombinationName("Straight from", 0), firstCombinationNumber, secondCombinationNumber, combinationSuits));
     index++;
     id++;
-    allCombinations.add(index, new Combination(combinationValue + id, "Straight from " + getCombinationName("Straight from", 1)));
+    allCombinations.add(index, new Combination(combinationValue + id, "Straight from " + getCombinationName("Straight from", 1), firstCombinationNumber+1, secondCombinationNumber, combinationSuits));
     index++;
     id++;
 }
 
 public void createFlushCombinations(){
     int combinationValue = 1000000;
-    allCombinations.add(index, new Combination(combinationValue, "Flush of Diamonds"));
+    int firstCombinationNumber = 0;
+    int secondCombinationNumber = 0;
+    String combinationSuits = "diamonds";
+    allCombinations.add(index, new Combination(combinationValue, "Flush of Diamonds", firstCombinationNumber, secondCombinationNumber, combinationSuits));
     index++;
-    allCombinations.add(index, new Combination(combinationValue, "Flush of Spades"));
+    combinationSuits = "spades";
+    allCombinations.add(index, new Combination(combinationValue, "Flush of Spades", firstCombinationNumber, secondCombinationNumber, combinationSuits));
     index++;
-    allCombinations.add(index, new Combination(combinationValue, "Flush of hearts"));
+    combinationSuits = "hearts";
+    allCombinations.add(index, new Combination(combinationValue, "Flush of hearts", firstCombinationNumber, secondCombinationNumber, combinationSuits));
     index++;
-    allCombinations.add(index, new Combination(combinationValue, "Flush of Clubs"));
+    combinationSuits = "clubs";
+    allCombinations.add(index, new Combination(combinationValue, "Flush of Clubs", firstCombinationNumber, secondCombinationNumber, combinationSuits));
     index++;
 }
 
 public void createFullHouseCombinations(int id){
     int combinationValue = 10000000;
+    int firstCombinationNumber = 9;
+    int secondCombinationNumber = 9;
+    String combinationSuits = "";
     for(int x = 0; x < 6; x++) {
         for(int y = 0; y < 6; y++){
             if(x != y){
-                allCombinations.add(index, new Combination(combinationValue + id, "Full House of three " + getCombinationName("Full house", x) + " and two " + getCombinationName("Full house", y)));
+                allCombinations.add(index, new Combination(combinationValue + id, "Full House of three " + getCombinationName("Full house", x) + " and two " + getCombinationName("Full house", y), firstCombinationNumber+y, secondCombinationNumber+x, combinationSuits));
                 index++;
                 id++;
             }
@@ -540,8 +559,11 @@ public void createFullHouseCombinations(int id){
 
 public  void createFourOfAKindCombinations(int id){
     int combinationValue = 100000000;
+    int firstCombinationNumber = 9;
+    int secondCombinationNumber = 0;
+    String combinationSuits = "";
     for(int x = 0; x < 6; x++) {
-        allCombinations.add(index, new Combination(combinationValue + id, "Four of " + getCombinationName("Four of", x)));
+        allCombinations.add(index, new Combination(combinationValue + id, "Four of " + getCombinationName("Four of", x), firstCombinationNumber+x, secondCombinationNumber, combinationSuits));
         index++;
         id++;
     }
@@ -549,21 +571,31 @@ public  void createFourOfAKindCombinations(int id){
 
 public void createStraightFlushCombinations(){
     int combinationValue = 1000000000;
-    allCombinations.add(index, new Combination(combinationValue, "Straight Flush of Diamonds from " + getCombinationName("Straight flush", 0)));
+    int firstCombinationNumber = 9;
+    int secondCombinationNumber = 0;
+    String combinationSuits = "diamonds";
+    allCombinations.add(index, new Combination(combinationValue, "Straight Flush of Diamonds from " + getCombinationName("Straight flush", 0), firstCombinationNumber, secondCombinationNumber, combinationSuits));
     index++;
-    allCombinations.add(index, new Combination(combinationValue, "Straight Flush of Spades from " + getCombinationName("Straight flush", 0)));
+    combinationSuits = "spades";
+    allCombinations.add(index, new Combination(combinationValue, "Straight Flush of Spades from " + getCombinationName("Straight flush", 0), firstCombinationNumber, secondCombinationNumber, combinationSuits));
     index++;
-    allCombinations.add(index, new Combination(combinationValue, "Straight Flush of hearts from " + getCombinationName("Straight flush", 0)));
+    combinationSuits = "hearts";
+    allCombinations.add(index, new Combination(combinationValue, "Straight Flush of hearts from " + getCombinationName("Straight flush", 0), firstCombinationNumber, secondCombinationNumber, combinationSuits));
     index++;
-    allCombinations.add(index, new Combination(combinationValue, "Straight Flush of Clubs from " + getCombinationName("Straight flush", 0)));
+    combinationSuits = "clubs";
+    allCombinations.add(index, new Combination(combinationValue, "Straight Flush of Clubs from " + getCombinationName("Straight flush", 0), firstCombinationNumber, secondCombinationNumber, combinationSuits));
     index++;
-    allCombinations.add(index, new Combination(combinationValue + 1, "Straight Flush of Diamonds from " + getCombinationName("Straight flush", 1)));
+    combinationSuits = "diamonds";
+    allCombinations.add(index, new Combination(combinationValue + 1, "Straight Flush of Diamonds from " + getCombinationName("Straight flush", 1), firstCombinationNumber+1, secondCombinationNumber, combinationSuits));
     index++;
-    allCombinations.add(index, new Combination(combinationValue + 1, "Straight Flush of Spades from " + getCombinationName("Straight flush", 1)));
+    combinationSuits = "spades";
+    allCombinations.add(index, new Combination(combinationValue + 1, "Straight Flush of Spades from " + getCombinationName("Straight flush", 1), firstCombinationNumber+1, secondCombinationNumber, combinationSuits));
     index++;
-    allCombinations.add(index, new Combination(combinationValue + 1, "Straight Flush of hearts from " + getCombinationName("Straight flush", 1)));
+    combinationSuits = "hearts";
+    allCombinations.add(index, new Combination(combinationValue + 1, "Straight Flush of hearts from " + getCombinationName("Straight flush", 1), firstCombinationNumber+1, secondCombinationNumber, combinationSuits));
     index++;
-    allCombinations.add(index, new Combination(combinationValue + 1, "Straight Flush of Clubs from " + getCombinationName("Straight flush", 1)));
+    combinationSuits = "clubs";
+    allCombinations.add(index, new Combination(combinationValue + 1, "Straight Flush of Clubs from " + getCombinationName("Straight flush", 1), firstCombinationNumber+1, secondCombinationNumber, combinationSuits));
     index++;
 }
 
@@ -643,10 +675,51 @@ public String getCombinationName(String tag, int number){
         public void onClick(View v) {
             currentCombinationValue = allCombinations.get(combinationSelected).getValue();
             currentCombinationName = allCombinations.get(combinationSelected).getName();
+            combinationChosenBy = playerTurn;
             setNextTurn(playerTurn);
             showPlayerView(); // add currentCombinationValue and currentCombinationName to this and show them on textview
 
         }
     }
 
+    private class CheckCombination implements Button.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            if(currentCombinationName != null) {
+                Boolean checkerLost = null;
+                if (currentCombinationValue < 100 && currentCombinationValue > 9) {
+                    checkerLost = checkHighCard(allCombinations.get(combinationSelected).combinationNumber);
+                } else if (currentCombinationValue < 1000 && currentCombinationValue > 90) {
+                    checkerLost = checkOnePair(allCombinations.get(combinationSelected).combinationNumber);
+                } else if (currentCombinationValue < 10000 && currentCombinationValue > 900) {
+                    checkerLost = checkTwoPair(allCombinations.get(combinationSelected).combinationNumber, allCombinations.get(combinationSelected).combinationNumber2);
+                } else if (currentCombinationValue < 100000 && currentCombinationValue > 9000) {
+                    checkerLost = checkThreeOfAKind(allCombinations.get(combinationSelected).combinationNumber);
+                } else if (currentCombinationValue < 1000000 && currentCombinationValue > 90000) {
+                    checkerLost = checkStraight(allCombinations.get(combinationSelected).combinationNumber);
+                } else if (currentCombinationValue < 10000000 && currentCombinationValue > 900000) {
+                    checkerLost = checkFlush(allCombinations.get(combinationSelected).combinationSuits);
+                } else if (currentCombinationValue < 100000000 && currentCombinationValue > 9000000) {
+                    checkerLost = checkFullHouse(allCombinations.get(combinationSelected).combinationNumber, allCombinations.get(combinationSelected).combinationNumber2);
+                } else if (currentCombinationValue < 1000000000 && currentCombinationValue > 90000000) {
+                    checkerLost = checkFourOfAKind(allCombinations.get(combinationSelected).combinationNumber);
+                } else if (currentCombinationValue < 1999999999 && currentCombinationValue > 900000000) {
+                    checkerLost = checkStraightFlush(allCombinations.get(combinationSelected).combinationNumber, allCombinations.get(combinationSelected).combinationSuits);
+                }
+                assignCardsToLoser(checkerLost);
+            }
+        }
+    }
+
+    public void assignCardsToLoser(boolean checkerLost){
+if(checkerLost){
+    players[playerTurn].cardCount++;
+    if(players[playerTurn].cardCount > 4){
+        players[playerTurn].isEliminated = true;
+    }
+}else{
+    players[combinationChosenBy].isEliminated = true;
+}
+playGame();
+    }
 }
