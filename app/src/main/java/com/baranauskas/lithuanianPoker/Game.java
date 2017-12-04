@@ -39,6 +39,7 @@ public class Game extends AppCompatActivity {
     int combinationChosenBy;
     int currentCombinationValue = 0;
     int combinationSelected;
+    int lastCombinationUsed;
     String playerNames;
     String currentCombinationName = null;
     Player[] players;
@@ -110,7 +111,6 @@ public class Game extends AppCompatActivity {
         pickCombinationSpinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                        //combinationSelected = position;
                 for(int x = 0; x < allCombinations.size(); x++){
                     if(allCombinations.get(x).getName() == myArraySpinner2.get(position)){
                         combinationSelected = x;
@@ -137,13 +137,6 @@ public class Game extends AppCompatActivity {
                 cardsArray[y][x] = new Card(0, "");
             }
         }
-        /*
-        for(int x = 0; x < playerCount; x++) {
-            players[x] = new Player(playerNamesArray[x], cards, cardCount);
-        }
-        for(int x = 0; x < 4; x++){
-            cards2[x] = new Card(0, "");
-        }*/
         for(int x = 0; x < playerCount; x++) {
             players[x] = new Player(playerNamesArray[x], cardsArray[x], cardCount);
         }
@@ -157,12 +150,12 @@ public class Game extends AppCompatActivity {
             players[playerNumber].playerCards[y].cardSuit = giveSuitsNameById(minSuitsId + (int) (Math.random() * ((maxSuitsId - minSuitsId) + 1)));
             players[playerNumber].playerCards[y].cardNameID = minId + (int) (Math.random() * ((maxId - minId) + 1));
             for(int x = 0; x < allCards.length; x++){
-                if(allCards[x].cardId == players[playerNumber].playerCards[y].cardNameID && allCards[x].cardSuit == players[playerNumber].playerCards[y].cardSuit && allCards[x].occupied()){
+                if(allCards[x].cardId == players[playerNumber].playerCards[y].getCardNameID() && allCards[x].cardSuit == players[playerNumber].playerCards[y].cardSuit && allCards[x].occupied()){
                     if(y != 0){
                         y-=1;
                     }
                     break;
-                }else if(allCards[x].cardId == players[playerNumber].playerCards[y].cardNameID && allCards[x].cardSuit == players[playerNumber].playerCards[y].cardSuit && !allCards[x].occupied()){
+                }else if(allCards[x].cardId == players[playerNumber].playerCards[y].getCardNameID() && allCards[x].cardSuit == players[playerNumber].playerCards[y].cardSuit && !allCards[x].occupied()){
                     allCards[x].setOccupied();
                     break;
                 }
@@ -196,13 +189,15 @@ public class Game extends AppCompatActivity {
         nameDisplay.setText(players[playerTurn].getPlayerName());
         createSpinners();
         for(int x = 0; x < players[playerTurn].cardCount; x++){
-            String name = "a" + Integer.toString(players[playerTurn].playerCards[x].cardNameID) + "_of_" + players[playerTurn].playerCards[x].cardSuit;
+            String name = "a" + Integer.toString(players[playerTurn].playerCards[x].getCardNameID()) + "_of_" + players[playerTurn].playerCards[x].cardSuit;
             int id = getResources().getIdentifier(name, "drawable", getPackageName());
             myDrawable = getResources().getDrawable(id);
             images[x].setImageDrawable(myDrawable);
-            cardTexts[x].setText(players[playerTurn].playerCards[x].cardSuit + players[playerTurn].playerCards[x].cardNameID);
+            cardTexts[x].setText(players[playerTurn].playerCards[x].cardSuit + players[playerTurn].playerCards[x].getCardNameID());
         }
-cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
+        if(combinationSelected > 0) {
+            cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
+        }
     }
 
     public void setNextTurn(int currentTurn){
@@ -279,7 +274,7 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
     public boolean checkHighCard(int cardId){
         for(int x = 0; x < playerCount; x++){
             for(int y = 0; y < players[x].getCardCount(); y++){
-                if(players[x].playerCards[y].cardNameID() == cardId && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardNameID() == cardId && !players[x].isEliminated()){
                     return true;
                 }
             }
@@ -291,7 +286,7 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
         int cardsCount = 0;
         for(int x = 0; x < playerCount; x++){
             for(int y = 0; y < players[x].getCardCount(); y++){
-                if(players[x].playerCards[y].cardNameID() == cardId && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardNameID() == cardId && !players[x].isEliminated()){
                     cardsCount++;
                     if(cardsCount == 2) {
                         return true;
@@ -307,13 +302,13 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
         int cards2Count = 0;
         for(int x = 0; x < playerCount; x++){
             for(int y = 0; y < players[x].getCardCount(); y++){
-                if(players[x].playerCards[y].cardNameID() == cardId && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardNameID() == cardId && !players[x].isEliminated()){
                     cards1Count++;
                     if(cards1Count == 2 && cards2Count == 2) {
                         return true;
                     }
                 }
-                if(players[x].playerCards[y].cardNameID() == card2Id && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardNameID() == card2Id && !players[x].isEliminated()){
                     cards2Count++;
                     if(cards1Count == 2 && cards2Count == 2) {
                         return true;
@@ -328,7 +323,7 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
         int cardsCount = 0;
         for(int x = 0; x < playerCount; x++){
             for(int y = 0; y < players[x].getCardCount(); y++){
-                if(players[x].playerCards[y].cardNameID() == cardId && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardNameID() == cardId && !players[x].isEliminated()){
                     cardsCount++;
                     if(cardsCount == 3) {
                         return true;
@@ -347,15 +342,15 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
         boolean fifth = false;
         for(int x = 0; x < playerCount; x++){
             for(int y = 0; y < players[x].getCardCount(); y++){
-                if(players[x].playerCards[y].cardNameID() == firstCardId && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardNameID() == firstCardId && !players[x].isEliminated()){
                         first = true;
-                    }else if(players[x].playerCards[y].cardNameID() == firstCardId+1 && !players[x].isEliminated()){
+                    }else if(players[x].playerCards[y].getCardNameID() == firstCardId+1 && !players[x].isEliminated()){
                     second = true;
-                }else if(players[x].playerCards[y].cardNameID() == firstCardId+2 && !players[x].isEliminated()){
+                }else if(players[x].playerCards[y].getCardNameID() == firstCardId+2 && !players[x].isEliminated()){
                     third = true;
-                }else if(players[x].playerCards[y].cardNameID() == firstCardId+3 && !players[x].isEliminated()){
+                }else if(players[x].playerCards[y].getCardNameID() == firstCardId+3 && !players[x].isEliminated()){
                     fourth = true;
-                }else if(players[x].playerCards[y].cardNameID() == firstCardId+4 && !players[x].isEliminated()){
+                }else if(players[x].playerCards[y].getCardNameID() == firstCardId+4 && !players[x].isEliminated()){
                     fifth = true;
                 }
             }
@@ -371,7 +366,7 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
         int cardsCount = 0;
         for(int x = 0; x < playerCount; x++){
             for(int y = 0; y < players[x].getCardCount(); y++){
-                if(players[x].playerCards[y].cardSuit() == cardSuit && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardSuit() == cardSuit && !players[x].isEliminated()){
                     cardsCount++;
                     if(cardsCount == 5) {
                         return true;
@@ -387,13 +382,13 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
         int cards3Count = 0;
         for(int x = 0; x < playerCount; x++){
             for(int y = 0; y < players[x].getCardCount(); y++){
-                if(players[x].playerCards[y].cardNameID() == card2Id && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardNameID() == card2Id && !players[x].isEliminated()){
                     cards2Count++;
                     if(cards2Count == 2 && cards3Count == 3) {
                         return true;
                     }
                 }
-                if(players[x].playerCards[y].cardNameID() == card3Id && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardNameID() == card3Id && !players[x].isEliminated()){
                     cards3Count++;
                     if(cards2Count == 2 && cards3Count == 3) {
                         return true;
@@ -408,7 +403,7 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
         int cardsCount = 0;
         for(int x = 0; x < playerCount; x++){
             for(int y = 0; y < players[x].getCardCount(); y++){
-                if(players[x].playerCards[y].cardNameID() == cardId && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardNameID() == cardId && !players[x].isEliminated()){
                     cardsCount++;
                     if(cardsCount == 4) {
                         return true;
@@ -427,15 +422,15 @@ cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
         boolean fifth = false;
         for(int x = 0; x < playerCount; x++){
             for(int y = 0; y < players[x].getCardCount(); y++){
-                if(players[x].playerCards[y].cardNameID() == firstCardId && players[x].playerCards[y].cardSuit() == cardSuit && !players[x].isEliminated()){
+                if(players[x].playerCards[y].getCardNameID() == firstCardId && players[x].playerCards[y].getCardSuit() == cardSuit && !players[x].isEliminated()){
                     first = true;
-                }else if(players[x].playerCards[y].cardNameID() == firstCardId+1 && players[x].playerCards[y].cardSuit() == cardSuit && !players[x].isEliminated()){
+                }else if(players[x].playerCards[y].getCardNameID() == firstCardId+1 && players[x].playerCards[y].getCardSuit() == cardSuit && !players[x].isEliminated()){
                     second = true;
-                }else if(players[x].playerCards[y].cardNameID() == firstCardId+2 && players[x].playerCards[y].cardSuit() == cardSuit && !players[x].isEliminated()){
+                }else if(players[x].playerCards[y].getCardNameID() == firstCardId+2 && players[x].playerCards[y].getCardSuit() == cardSuit && !players[x].isEliminated()){
                     third = true;
-                }else if(players[x].playerCards[y].cardNameID() == firstCardId+3 && players[x].playerCards[y].cardSuit() == cardSuit && !players[x].isEliminated()){
+                }else if(players[x].playerCards[y].getCardNameID() == firstCardId+3 && players[x].playerCards[y].getCardSuit() == cardSuit && !players[x].isEliminated()){
                     fourth = true;
-                }else if(players[x].playerCards[y].cardNameID() == firstCardId+4 && players[x].playerCards[y].cardSuit() == cardSuit && !players[x].isEliminated()){
+                }else if(players[x].playerCards[y].getCardNameID() == firstCardId+4 && players[x].playerCards[y].getCardSuit() == cardSuit && !players[x].isEliminated()){
                     fifth = true;
                 }
             }
@@ -675,6 +670,7 @@ public String getCombinationName(String tag, int number){
         public void onClick(View v) {
             currentCombinationValue = allCombinations.get(combinationSelected).getValue();
             currentCombinationName = allCombinations.get(combinationSelected).getName();
+            lastCombinationUsed = combinationSelected;
             combinationChosenBy = playerTurn;
             setNextTurn(playerTurn);
             showPlayerView(); // add currentCombinationValue and currentCombinationName to this and show them on textview
@@ -688,23 +684,23 @@ public String getCombinationName(String tag, int number){
             if(currentCombinationName != null) {
                 Boolean checkerLost = null;
                 if (currentCombinationValue < 100 && currentCombinationValue > 9) {
-                    checkerLost = checkHighCard(allCombinations.get(combinationSelected).combinationNumber);
+                    checkerLost = checkHighCard(allCombinations.get(lastCombinationUsed).combinationNumber);
                 } else if (currentCombinationValue < 1000 && currentCombinationValue > 90) {
-                    checkerLost = checkOnePair(allCombinations.get(combinationSelected).combinationNumber);
+                    checkerLost = checkOnePair(allCombinations.get(lastCombinationUsed).combinationNumber);
                 } else if (currentCombinationValue < 10000 && currentCombinationValue > 900) {
-                    checkerLost = checkTwoPair(allCombinations.get(combinationSelected).combinationNumber, allCombinations.get(combinationSelected).combinationNumber2);
+                    checkerLost = checkTwoPair(allCombinations.get(lastCombinationUsed).combinationNumber, allCombinations.get(lastCombinationUsed).combinationNumber2);
                 } else if (currentCombinationValue < 100000 && currentCombinationValue > 9000) {
-                    checkerLost = checkThreeOfAKind(allCombinations.get(combinationSelected).combinationNumber);
+                    checkerLost = checkThreeOfAKind(allCombinations.get(lastCombinationUsed).combinationNumber);
                 } else if (currentCombinationValue < 1000000 && currentCombinationValue > 90000) {
-                    checkerLost = checkStraight(allCombinations.get(combinationSelected).combinationNumber);
+                    checkerLost = checkStraight(allCombinations.get(lastCombinationUsed).combinationNumber);
                 } else if (currentCombinationValue < 10000000 && currentCombinationValue > 900000) {
-                    checkerLost = checkFlush(allCombinations.get(combinationSelected).combinationSuits);
+                    checkerLost = checkFlush(allCombinations.get(lastCombinationUsed).combinationSuits);
                 } else if (currentCombinationValue < 100000000 && currentCombinationValue > 9000000) {
-                    checkerLost = checkFullHouse(allCombinations.get(combinationSelected).combinationNumber, allCombinations.get(combinationSelected).combinationNumber2);
+                    checkerLost = checkFullHouse(allCombinations.get(lastCombinationUsed).combinationNumber, allCombinations.get(lastCombinationUsed).combinationNumber2);
                 } else if (currentCombinationValue < 1000000000 && currentCombinationValue > 90000000) {
-                    checkerLost = checkFourOfAKind(allCombinations.get(combinationSelected).combinationNumber);
+                    checkerLost = checkFourOfAKind(allCombinations.get(lastCombinationUsed).combinationNumber);
                 } else if (currentCombinationValue < 1999999999 && currentCombinationValue > 900000000) {
-                    checkerLost = checkStraightFlush(allCombinations.get(combinationSelected).combinationNumber, allCombinations.get(combinationSelected).combinationSuits);
+                    checkerLost = checkStraightFlush(allCombinations.get(lastCombinationUsed).combinationNumber, allCombinations.get(lastCombinationUsed).combinationSuits);
                 }
                 assignCardsToLoser(checkerLost);
             }
@@ -718,8 +714,25 @@ if(checkerLost){
         players[playerTurn].isEliminated = true;
     }
 }else{
-    players[combinationChosenBy].isEliminated = true;
+    players[combinationChosenBy].cardCount++;
+    if(players[combinationChosenBy].cardCount > 4){
+        players[combinationChosenBy].isEliminated = true;
+    }
 }
+setNewRound();
 playGame();
+
+    }
+
+    public void setNewRound(){
+        setNextTurn(playerTurn);
+        combinationChosenBy = -1;
+        combinationSelected = -1;
+        currentCombinationName = null;
+        currentCombinationValue = -1;
+        lastCombinationUsed = -1;
+        //createSpinners();
+        //myArraySpinner = null;
+       // myArraySpinner2 = null;
     }
 }
