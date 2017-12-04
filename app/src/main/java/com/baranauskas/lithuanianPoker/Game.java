@@ -40,6 +40,7 @@ public class Game extends AppCompatActivity {
     int currentCombinationValue = 0;
     int combinationSelected;
     int lastCombinationUsed;
+    Boolean checkerWon;
     String playerNames;
     String currentCombinationName = null;
     Player[] players;
@@ -702,6 +703,11 @@ public String getCombinationName(String tag, int number){
                 } else if (currentCombinationValue < 1999999999 && currentCombinationValue > 900000000) {
                     checkerLost = checkStraightFlush(allCombinations.get(lastCombinationUsed).combinationNumber, allCombinations.get(lastCombinationUsed).combinationSuits);
                 }
+                if(checkerLost){
+                    checkerWon = false;
+                }else{
+                    checkerWon = true;
+                }
                 assignCardsToLoser(checkerLost);
             }
         }
@@ -725,14 +731,13 @@ playGame();
     }
 
     public void setNewRound(){
-        setNextTurn(playerTurn);
+        if(!checkerWon){
+            setNextTurn(playerTurn);
+        }
         combinationChosenBy = -1;
-        combinationSelected = -1;
+        //combinationSelected = -1;
         currentCombinationName = null;
         currentCombinationValue = 0;
         lastCombinationUsed = -1;
-        //createSpinners();
-        //myArraySpinner = null;
-       // myArraySpinner2 = null;
     }
 }
