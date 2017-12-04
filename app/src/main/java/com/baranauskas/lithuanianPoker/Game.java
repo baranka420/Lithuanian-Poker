@@ -267,8 +267,8 @@ public class Game extends AppCompatActivity {
             if (!players[x].isEliminated()) {
                 dealCards(x);
             }
-            showPlayerView();
         }
+        showPlayerView();
     }
 
     public boolean checkHighCard(int cardId){
@@ -729,7 +729,7 @@ playGame();
         combinationChosenBy = -1;
         combinationSelected = -1;
         currentCombinationName = null;
-        currentCombinationValue = -1;
+        currentCombinationValue = 0;
         lastCombinationUsed = -1;
         //createSpinners();
         //myArraySpinner = null;
