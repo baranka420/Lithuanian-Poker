@@ -40,6 +40,8 @@ public class Game extends AppCompatActivity {
     int currentCombinationValue = 0;
     int combinationSelected;
     int lastCombinationUsed;
+    int activePlayerCount;
+    int []cardCounts;
     Boolean checkerWon;
     String playerNames;
     String currentCombinationName = null;
@@ -78,10 +80,12 @@ public class Game extends AppCompatActivity {
         cardTexts[3] = fourthCard;
         Intent gameDataIntent = getIntent();
         playerCount = gameDataIntent.getExtras().getInt("playerCount");
+        activePlayerCount = playerCount;
         playerNames = gameDataIntent.getExtras().getString("playerNames");
         playerNamesArray = playerNames.split(",");
         allCards = new AllCards[24];
         players = new Player[playerCount];
+        cardCounts = new int [playerCount];
         takeTurnButton.setOnClickListener(new TakeTurn());
         checkButton.setOnClickListener(new CheckCombination());
         createCombinations();
@@ -134,12 +138,13 @@ public class Game extends AppCompatActivity {
         Card [][]cardsArray = new Card[playerCount][];
         for(int y = 0; y < playerCount; y++){
             cardsArray[y] = new Card[4];
+            cardCounts[y] = 1;
             for(int x = 0; x < 4; x++){
                 cardsArray[y][x] = new Card(0, "");
             }
         }
         for(int x = 0; x < playerCount; x++) {
-            players[x] = new Player(playerNamesArray[x], cardsArray[x], cardCount);
+            players[x] = new Player(playerNamesArray[x], cardsArray[x], cardCounts[x]);
         }
 
         playGame();
@@ -194,7 +199,7 @@ public class Game extends AppCompatActivity {
             int id = getResources().getIdentifier(name, "drawable", getPackageName());
             myDrawable = getResources().getDrawable(id);
             images[x].setImageDrawable(myDrawable);
-            cardTexts[x].setText(players[playerTurn].playerCards[x].cardSuit + players[playerTurn].playerCards[x].getCardNameID());
+            //cardTexts[x].setText(players[playerTurn].playerCards[x].cardSuit + players[playerTurn].playerCards[x].getCardNameID());
         }
         if(combinationSelected > 0) {
             cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
@@ -674,7 +679,7 @@ public String getCombinationName(String tag, int number){
             lastCombinationUsed = combinationSelected;
             combinationChosenBy = playerTurn;
             setNextTurn(playerTurn);
-            showPlayerView(); // add currentCombinationValue and currentCombinationName to this and show them on textview
+            showPlayerView();
 
         }
     }
@@ -718,11 +723,13 @@ if(checkerLost){
     players[playerTurn].cardCount++;
     if(players[playerTurn].cardCount > 4){
         players[playerTurn].isEliminated = true;
+        activePlayerCount--;
     }
 }else{
     players[combinationChosenBy].cardCount++;
     if(players[combinationChosenBy].cardCount > 4){
         players[combinationChosenBy].isEliminated = true;
+        activePlayerCount--;
     }
 }
 setNewRound();
