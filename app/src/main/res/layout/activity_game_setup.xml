@@ -19,18 +19,6 @@
         app:layout_constraintVertical_bias="0.325" />
 
     <EditText
-        android:id="@+id/playerCountInput"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:ems="10"
-        android:inputType="number"
-        app:layout_constraintHorizontal_bias="0.503" />
-
-    <EditText
         android:id="@+id/playerNameInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,8 +28,7 @@
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.632" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/confirmNameButton"
@@ -64,5 +51,17 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.777" />
+
+    <Spinner
+        android:id="@+id/playerCountSpinner"
+        android:layout_width="344dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#313a3f"
+        android:popupBackground="#313a3f"
+        app:layout_constraintVertical_bias="0.404" />
 
 </android.support.constraint.ConstraintLayout>

@@ -13,11 +13,11 @@ public class Card {
         this.cardSuit = y;
     }
 
-    public int cardNameID() { return this.cardNameID(); }
-    public String cardSuit() { return this.cardSuit(); }
+    public int getCardNameID() { return this.cardNameID; }
+    public String getCardSuit() { return this.cardSuit; }
 
     // return a string representation of this point
     public String toString() {
-        return "(" + cardNameID() + ", " + cardSuit() + ")";
+        return "(" + getCardNameID() + ", " + getCardSuit() + ")";
     }
 }
