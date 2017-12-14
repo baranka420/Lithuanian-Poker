@@ -26,6 +26,7 @@ public class Game extends AppCompatActivity {
     TextView firstCard, secondCard, thirdCard, fourthCard, nameDisplay;
     ImageView iv1, iv2, iv3, iv4;
     Drawable myDrawable;
+    Drawable defaultImageDrawable;
     private ImageView[] images = new ImageView[4];
     private TextView[] cardTexts = new TextView[4];
     final int minSuitsId = 0;
@@ -40,9 +41,9 @@ public class Game extends AppCompatActivity {
     int currentCombinationValue = 0;
     int combinationSelected;
     int lastCombinationUsed;
-    int activePlayerCount;
-    int []cardCounts;
+    int activePlayersCount;
     Boolean checkerWon;
+    Boolean gameOver = false;
     String playerNames;
     String currentCombinationName = null;
     Player[] players;
@@ -74,18 +75,18 @@ public class Game extends AppCompatActivity {
         images[1] = iv2;
         images[2] = iv3;
         images[3] = iv4;
+        defaultImageDrawable = iv1.getDrawable();
         cardTexts[0] = firstCard;
         cardTexts[1] = secondCard;
         cardTexts[2] = thirdCard;
         cardTexts[3] = fourthCard;
         Intent gameDataIntent = getIntent();
         playerCount = gameDataIntent.getExtras().getInt("playerCount");
-        activePlayerCount = playerCount;
         playerNames = gameDataIntent.getExtras().getString("playerNames");
         playerNamesArray = playerNames.split(",");
+        activePlayersCount = playerCount;
         allCards = new AllCards[24];
         players = new Player[playerCount];
-        cardCounts = new int [playerCount];
         takeTurnButton.setOnClickListener(new TakeTurn());
         checkButton.setOnClickListener(new CheckCombination());
         createCombinations();
@@ -128,6 +129,11 @@ public class Game extends AppCompatActivity {
             }
         });
 
+        gameSetup();
+        playGame();
+    }
+
+    public void gameSetup(){
         int i = 0;
         for (int x = minId; x < maxId+1; x++) {
             for(int y = minSuitsId; y < maxSuitsId+1; y++){
@@ -138,18 +144,14 @@ public class Game extends AppCompatActivity {
         Card [][]cardsArray = new Card[playerCount][];
         for(int y = 0; y < playerCount; y++){
             cardsArray[y] = new Card[4];
-            cardCounts[y] = 1;
             for(int x = 0; x < 4; x++){
                 cardsArray[y][x] = new Card(0, "");
             }
         }
         for(int x = 0; x < playerCount; x++) {
-            players[x] = new Player(playerNamesArray[x], cardsArray[x], cardCounts[x]);
+            players[x] = new Player(playerNamesArray[x], cardsArray[x], cardCount);
         }
-
-        playGame();
     }
-
 
     public void dealCards(int playerNumber){
         for (int y = 0; y < players[playerNumber].getCardCount(); y++) {
@@ -194,6 +196,9 @@ public class Game extends AppCompatActivity {
     public void showPlayerView(){
         nameDisplay.setText(players[playerTurn].getPlayerName());
         createSpinners();
+        for(int x = 0; x < 4; x++){
+            images[x].setImageDrawable(defaultImageDrawable);
+        }
         for(int x = 0; x < players[playerTurn].cardCount; x++){
             String name = "a" + Integer.toString(players[playerTurn].playerCards[x].getCardNameID()) + "_of_" + players[playerTurn].playerCards[x].cardSuit;
             int id = getResources().getIdentifier(name, "drawable", getPackageName());
@@ -680,40 +685,49 @@ public String getCombinationName(String tag, int number){
             combinationChosenBy = playerTurn;
             setNextTurn(playerTurn);
             showPlayerView();
-
         }
     }
 
     private class CheckCombination implements Button.OnClickListener{
         @Override
         public void onClick(View v) {
-            if(currentCombinationName != null) {
-                Boolean checkerLost = null;
-                if (currentCombinationValue < 100 && currentCombinationValue > 9) {
-                    checkerLost = checkHighCard(allCombinations.get(lastCombinationUsed).combinationNumber);
-                } else if (currentCombinationValue < 1000 && currentCombinationValue > 90) {
-                    checkerLost = checkOnePair(allCombinations.get(lastCombinationUsed).combinationNumber);
-                } else if (currentCombinationValue < 10000 && currentCombinationValue > 900) {
-                    checkerLost = checkTwoPair(allCombinations.get(lastCombinationUsed).combinationNumber, allCombinations.get(lastCombinationUsed).combinationNumber2);
-                } else if (currentCombinationValue < 100000 && currentCombinationValue > 9000) {
-                    checkerLost = checkThreeOfAKind(allCombinations.get(lastCombinationUsed).combinationNumber);
-                } else if (currentCombinationValue < 1000000 && currentCombinationValue > 90000) {
-                    checkerLost = checkStraight(allCombinations.get(lastCombinationUsed).combinationNumber);
-                } else if (currentCombinationValue < 10000000 && currentCombinationValue > 900000) {
-                    checkerLost = checkFlush(allCombinations.get(lastCombinationUsed).combinationSuits);
-                } else if (currentCombinationValue < 100000000 && currentCombinationValue > 9000000) {
-                    checkerLost = checkFullHouse(allCombinations.get(lastCombinationUsed).combinationNumber, allCombinations.get(lastCombinationUsed).combinationNumber2);
-                } else if (currentCombinationValue < 1000000000 && currentCombinationValue > 90000000) {
-                    checkerLost = checkFourOfAKind(allCombinations.get(lastCombinationUsed).combinationNumber);
-                } else if (currentCombinationValue < 1999999999 && currentCombinationValue > 900000000) {
-                    checkerLost = checkStraightFlush(allCombinations.get(lastCombinationUsed).combinationNumber, allCombinations.get(lastCombinationUsed).combinationSuits);
+            if (!gameOver) {
+                if (currentCombinationName != null) {
+                    Boolean checkerLost = null;
+                    if (currentCombinationValue < 100 && currentCombinationValue > 9) {
+                        checkerLost = checkHighCard(allCombinations.get(lastCombinationUsed).combinationNumber);
+                    } else if (currentCombinationValue < 1000 && currentCombinationValue > 90) {
+                        checkerLost = checkOnePair(allCombinations.get(lastCombinationUsed).combinationNumber);
+                    } else if (currentCombinationValue < 10000 && currentCombinationValue > 900) {
+                        checkerLost = checkTwoPair(allCombinations.get(lastCombinationUsed).combinationNumber, allCombinations.get(lastCombinationUsed).combinationNumber2);
+                    } else if (currentCombinationValue < 100000 && currentCombinationValue > 9000) {
+                        checkerLost = checkThreeOfAKind(allCombinations.get(lastCombinationUsed).combinationNumber);
+                    } else if (currentCombinationValue < 1000000 && currentCombinationValue > 90000) {
+                        checkerLost = checkStraight(allCombinations.get(lastCombinationUsed).combinationNumber);
+                    } else if (currentCombinationValue < 10000000 && currentCombinationValue > 900000) {
+                        checkerLost = checkFlush(allCombinations.get(lastCombinationUsed).combinationSuits);
+                    } else if (currentCombinationValue < 100000000 && currentCombinationValue > 9000000) {
+                        checkerLost = checkFullHouse(allCombinations.get(lastCombinationUsed).combinationNumber, allCombinations.get(lastCombinationUsed).combinationNumber2);
+                    } else if (currentCombinationValue < 1000000000 && currentCombinationValue > 90000000) {
+                        checkerLost = checkFourOfAKind(allCombinations.get(lastCombinationUsed).combinationNumber);
+                    } else if (currentCombinationValue < 1999999999 && currentCombinationValue > 900000000) {
+                        checkerLost = checkStraightFlush(allCombinations.get(lastCombinationUsed).combinationNumber, allCombinations.get(lastCombinationUsed).combinationSuits);
+                    }
+                    if (checkerLost) {
+                        checkerWon = false;
+                    } else {
+                        checkerWon = true;
+                    }
+                    assignCardsToLoser(checkerLost);
                 }
-                if(checkerLost){
-                    checkerWon = false;
-                }else{
-                    checkerWon = true;
+            }else{
+                activePlayersCount = playerCount;
+                gameOver = false;
+                for(int x = 0; x < 4; x++){
+                    images[x].setImageDrawable(defaultImageDrawable);
                 }
-                assignCardsToLoser(checkerLost);
+                gameSetup();
+                playGame();
             }
         }
     }
@@ -723,17 +737,27 @@ if(checkerLost){
     players[playerTurn].cardCount++;
     if(players[playerTurn].cardCount > 4){
         players[playerTurn].isEliminated = true;
-        activePlayerCount--;
+        activePlayersCount--;
+        if(activePlayersCount == 1){
+            gameOver = true;
+        }
     }
 }else{
     players[combinationChosenBy].cardCount++;
     if(players[combinationChosenBy].cardCount > 4){
         players[combinationChosenBy].isEliminated = true;
-        activePlayerCount--;
+        activePlayersCount--;
+        if(activePlayersCount == 1){
+            gameOver = true;
+        }
     }
 }
-setNewRound();
-playGame();
+if(gameOver){
+    gameOverScreen();
+}else{
+    setNewRound();
+    playGame();
+}
 
     }
 
@@ -746,5 +770,10 @@ playGame();
         currentCombinationName = null;
         currentCombinationValue = 0;
         lastCombinationUsed = -1;
+    }
+
+    public void gameOverScreen(){
+        checkButton.setText("PLAY AGAIN");
+        takeTurnButton.setText("NEW GAME");
     }
 }
