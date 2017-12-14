@@ -42,6 +42,7 @@ public class Game extends AppCompatActivity {
     int combinationSelected;
     int lastCombinationUsed;
     int activePlayersCount;
+    int winner;
     Boolean checkerWon;
     Boolean gameOver = false;
     String playerNames;
@@ -204,7 +205,6 @@ public class Game extends AppCompatActivity {
             int id = getResources().getIdentifier(name, "drawable", getPackageName());
             myDrawable = getResources().getDrawable(id);
             images[x].setImageDrawable(myDrawable);
-            //cardTexts[x].setText(players[playerTurn].playerCards[x].cardSuit + players[playerTurn].playerCards[x].getCardNameID());
         }
         if(combinationSelected > 0) {
             cardTexts[3].setText(allCombinations.get(combinationSelected).getName());
@@ -679,12 +679,16 @@ public String getCombinationName(String tag, int number){
     private class TakeTurn implements Button.OnClickListener{
         @Override
         public void onClick(View v) {
-            currentCombinationValue = allCombinations.get(combinationSelected).getValue();
-            currentCombinationName = allCombinations.get(combinationSelected).getName();
-            lastCombinationUsed = combinationSelected;
-            combinationChosenBy = playerTurn;
-            setNextTurn(playerTurn);
-            showPlayerView();
+            if(gameOver){
+                //ProcessPhoenix.triggerRebirth(context);     REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+            }else {
+                currentCombinationValue = allCombinations.get(combinationSelected).getValue();
+                currentCombinationName = allCombinations.get(combinationSelected).getName();
+                lastCombinationUsed = combinationSelected;
+                combinationChosenBy = playerTurn;
+                setNextTurn(playerTurn);
+                showPlayerView();
+            }
         }
     }
 
@@ -740,6 +744,7 @@ if(checkerLost){
         activePlayersCount--;
         if(activePlayersCount == 1){
             gameOver = true;
+            winner = combinationChosenBy;
         }
     }
 }else{
@@ -749,6 +754,7 @@ if(checkerLost){
         activePlayersCount--;
         if(activePlayersCount == 1){
             gameOver = true;
+            winner = playerTurn;
         }
     }
 }
@@ -766,7 +772,6 @@ if(gameOver){
             setNextTurn(playerTurn);
         }
         combinationChosenBy = -1;
-        //combinationSelected = -1;
         currentCombinationName = null;
         currentCombinationValue = 0;
         lastCombinationUsed = -1;
@@ -775,5 +780,6 @@ if(gameOver){
     public void gameOverScreen(){
         checkButton.setText("PLAY AGAIN");
         takeTurnButton.setText("NEW GAME");
+        cardTexts[1].setText("CONGRATZ " + players[winner].getPlayerName() + " YOU WON !!!");
     }
 }
