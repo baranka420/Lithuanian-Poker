@@ -5,6 +5,7 @@ package com.baranauskas.lithuanianPoker;
  */
 
 import android.graphics.drawable.Drawable;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,10 +13,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.content.Intent;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Game extends AppCompatActivity {
@@ -25,7 +28,8 @@ public class Game extends AppCompatActivity {
     Spinner pickCombinationSpinner2;
     TextView firstCard, secondCard, thirdCard, fourthCard, nameDisplay;
     ImageView iv1, iv2, iv3, iv4;
-    Drawable myDrawable;
+    ImageView waitingView;
+    Drawable myDrawable, readyScreenDrawable;
     Drawable defaultImageDrawable;
     private ImageView[] images = new ImageView[4];
     private TextView[] cardTexts = new TextView[4];
@@ -53,6 +57,10 @@ public class Game extends AppCompatActivity {
     ArrayList<Combination> allCombinations = new ArrayList<>();
     List<String> myArraySpinner = new ArrayList<String>();
     List<String> myArraySpinner2 = new ArrayList<String>();
+    private String[] usedCombinationList;
+    //private List<String> usedCombinationList = new ArrayList<String>();
+    private DrawerLayout drawerLayout;
+    private ListView drawerList;
 
 
     @Override
@@ -72,6 +80,9 @@ public class Game extends AppCompatActivity {
         iv2 = (ImageView) findViewById(R.id.iv2);
         iv3 = (ImageView) findViewById(R.id.iv3);
         iv4 = (ImageView) findViewById(R.id.iv4);
+        waitingView = (ImageView) findViewById(R.id.waitingScreen);
+        //drawerLayout = (DrawerLayout) findViewById(R.id.navDrawer);
+        //drawerList = (ListView) findViewById(R.id.navigation);
         images[0] = iv1;
         images[1] = iv2;
         images[2] = iv3;
@@ -90,7 +101,15 @@ public class Game extends AppCompatActivity {
         players = new Player[playerCount];
         takeTurnButton.setOnClickListener(new TakeTurn());
         checkButton.setOnClickListener(new CheckCombination());
+        waitingView.setClickable(true);
+        waitingView.setOnClickListener(new WaitingScreen());
+        String name = "verygareadyftw3";
+        int id = getResources().getIdentifier(name, "drawable", getPackageName());
+        readyScreenDrawable = getResources().getDrawable(id);
+        waitingView.setImageDrawable(readyScreenDrawable);
         createCombinations();
+        //drawerList.setAdapter(new ArrayAdapter<String>(this,
+            //    R.layout.drawer_list_item, usedCombinationList));
 
         pickCombinationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -152,6 +171,8 @@ public class Game extends AppCompatActivity {
         for(int x = 0; x < playerCount; x++) {
             players[x] = new Player(playerNamesArray[x], cardsArray[x], cardCount);
         }
+        checkButton.setText("CHECK");
+        takeTurnButton.setText("TAKE TURN");
     }
 
     public void dealCards(int playerNumber){
@@ -195,6 +216,7 @@ public class Game extends AppCompatActivity {
     }
 
     public void showPlayerView(){
+        waitingScreenOn();
         nameDisplay.setText(players[playerTurn].getPlayerName());
         createSpinners();
         for(int x = 0; x < 4; x++){
@@ -676,23 +698,34 @@ public String getCombinationName(String tag, int number){
 }
 
 
-    private class TakeTurn implements Button.OnClickListener{
+    private class TakeTurn implements Button.OnClickListener{ // Doubles as start new game button
         @Override
         public void onClick(View v) {
             if(gameOver){
-                //ProcessPhoenix.triggerRebirth(context);     REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+                Intent restartIntent = getBaseContext().getPackageManager()
+                        .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+                restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(restartIntent);
             }else {
                 currentCombinationValue = allCombinations.get(combinationSelected).getValue();
                 currentCombinationName = allCombinations.get(combinationSelected).getName();
                 lastCombinationUsed = combinationSelected;
                 combinationChosenBy = playerTurn;
+                //usedCombinationList.add(currentCombinationName);
                 setNextTurn(playerTurn);
                 showPlayerView();
             }
         }
     }
 
-    private class CheckCombination implements Button.OnClickListener{
+    public void waitingScreenOn(){
+        waitingView.setVisibility(View.VISIBLE);
+        waitingView.setClickable(true);
+        checkButton.setVisibility(View.INVISIBLE);
+        takeTurnButton.setVisibility(View.INVISIBLE);
+    }
+
+    private class CheckCombination implements Button.OnClickListener{ // Doubles as play again button
         @Override
         public void onClick(View v) {
             if (!gameOver) {
@@ -735,6 +768,15 @@ public String getCombinationName(String tag, int number){
             }
         }
     }
+    private class WaitingScreen implements ImageView.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            waitingView.setVisibility(View.INVISIBLE);
+            waitingView.setClickable(false);
+            takeTurnButton.setVisibility(View.VISIBLE);
+            checkButton.setVisibility(View.VISIBLE);
+        }
+    }
 
     public void assignCardsToLoser(boolean checkerLost){
 if(checkerLost){
@@ -764,7 +806,6 @@ if(gameOver){
     setNewRound();
     playGame();
 }
-
     }
 
     public void setNewRound(){
@@ -782,4 +823,5 @@ if(gameOver){
         takeTurnButton.setText("NEW GAME");
         cardTexts[1].setText("CONGRATZ " + players[winner].getPlayerName() + " YOU WON !!!");
     }
+
 }
