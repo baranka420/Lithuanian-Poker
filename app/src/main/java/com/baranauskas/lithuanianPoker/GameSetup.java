@@ -103,6 +103,7 @@ public class GameSetup extends AppCompatActivity {
             if(playerName != "enter player name" && playerName.length() < 20 && playerName.length() > 1 && !conflictingName) {
                 players[playerNumber] = new Player(playerName, cards, cardCount);
                 playerNumber++;
+                display.setText("Enter next players's name:");
                 if(playerNumber == playerCount) {
                     for(int i = 0; i < playerCount; i++){
                         playerNames += players[i].getPlayerName();

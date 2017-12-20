@@ -18,7 +18,6 @@ import android.widget.Spinner;
 import android.content.Intent;
 import android.widget.TextView;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Game extends AppCompatActivity {
@@ -111,49 +110,13 @@ public class Game extends AppCompatActivity {
         //drawerList.setAdapter(new ArrayAdapter<String>(this,
             //    R.layout.drawer_list_item, usedCombinationList));
 
-        pickCombinationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                pickCombinationSpinner2.setAdapter(null);
-                myArraySpinner2 = new ArrayList<String>();
-                for(int x = 0; x < allCombinations.size(); x++){
-                    if(allCombinations.get(x).getValue() > currentCombinationValue && allCombinations.get(x).getValue() < currentCombinationValue*10){
-                        myArraySpinner2.add(allCombinations.get(x).getName());
-                    }
-                    if(currentCombinationValue == 0){
-                        if(allCombinations.get(x).getValue() > allCombinations.get(combinationSelected).getValue()-1 && allCombinations.get(x).getValue() < (allCombinations.get(combinationSelected).getValue()-1)*10){
-                            myArraySpinner2.add(allCombinations.get(x).getName());
-                        }
-                    }
-                }
-                afterItemSelected();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }
-        });
-
-        pickCombinationSpinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                for(int x = 0; x < allCombinations.size(); x++){
-                    if(allCombinations.get(x).getName() == myArraySpinner2.get(position)){
-                        combinationSelected = x;
-                    }
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }
-        });
-
         gameSetup();
         playGame();
     }
 
     public void gameSetup(){
+        pickCombinationSpinner.setOnItemSelectedListener(new pickCombination());
+        pickCombinationSpinner2.setOnItemSelectedListener(new pickCombination2());
         int i = 0;
         for (int x = minId; x < maxId+1; x++) {
             for(int y = minSuitsId; y < maxSuitsId+1; y++){
@@ -768,6 +731,123 @@ public String getCombinationName(String tag, int number){
             }
         }
     }
+    private class pickCombination implements Spinner.OnItemSelectedListener{
+        @Override
+        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+            pickCombinationSpinner2.setAdapter(null);
+            myArraySpinner2 = new ArrayList<String>();
+            for(int x = 0; x < allCombinations.size(); x++){
+               /* if(allCombinations.get(x).getValue() > currentCombinationValue && allCombinations.get(x).getValue() < currentCombinationValue*10){
+                    myArraySpinner2.add(allCombinations.get(x).getName());
+                }
+                if(currentCombinationValue == 0){
+                    if(allCombinations.get(x).getValue() > allCombinations.get(combinationSelected).getValue()-1 && allCombinations.get(x).getValue() < (allCombinations.get(combinationSelected).getValue()-1)*10){
+                        myArraySpinner2.add(allCombinations.get(x).getName());
+                    }
+                }else{*/
+                    if(allCombinations.get(x).getValue() > currentCombinationValue){
+                        switch (myArraySpinner.get(position)){
+                            case "High card":
+                                if(allCombinations.get(x).getValue() > 10+40){
+                                    x = allCombinations.size();
+                                    break;
+                                }else{
+                                    myArraySpinner2.add(allCombinations.get(x).getName());
+                                }
+                                break;
+                            case "Pair":
+                                if(allCombinations.get(x).getValue() > 100+40){
+                                    x = allCombinations.size();
+                                    break;
+                                }else{
+                                    myArraySpinner2.add(allCombinations.get(x).getName());
+                                }
+                                break;
+                            case "Two-pair":
+                                if(allCombinations.get(x).getValue() > 1000+40){
+                                    x = allCombinations.size();
+                                    break;
+                                }else{
+                                    myArraySpinner2.add(allCombinations.get(x).getName());
+                                }
+                                break;
+                            case "Three of a kind":
+                                if(allCombinations.get(x).getValue() > 10000+40){
+                                    x = allCombinations.size();
+                                    break;
+                                }else{
+                                    myArraySpinner2.add(allCombinations.get(x).getName());
+                                }
+                                break;
+                            case "Straight":
+                                if(allCombinations.get(x).getValue() > 100000+40){
+                                    x = allCombinations.size();
+                                    break;
+                                }else{
+                                    myArraySpinner2.add(allCombinations.get(x).getName());
+                                }
+                                break;
+                            case "Flush":
+                                if(allCombinations.get(x).getValue() > 1000000+40){
+                                    x = allCombinations.size();
+                                    break;
+                                }else{
+                                    myArraySpinner2.add(allCombinations.get(x).getName());
+                                }
+                                break;
+                            case "Full house":
+                                if(allCombinations.get(x).getValue() > 10000000+40){
+                                    x = allCombinations.size();
+                                    break;
+                                }else{
+                                    myArraySpinner2.add(allCombinations.get(x).getName());
+                                }
+                                break;
+                            case "Four of a kind":
+                                if(allCombinations.get(x).getValue() > 100000000+40){
+                                    x = allCombinations.size();
+                                    break;
+                                }else{
+                                    myArraySpinner2.add(allCombinations.get(x).getName());
+                                }
+                                break;
+                            case "Straight flush":
+                                if(allCombinations.get(x).getValue() > 1000000000+40){
+                                    x = allCombinations.size();
+                                    break;
+                                }else{
+                                    myArraySpinner2.add(allCombinations.get(x).getName());
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+               // }
+            }
+            afterItemSelected();
+        }
+        @Override
+        public void onNothingSelected(AdapterView<?> parentView) {
+            // your code here
+        }
+    }
+
+    private class pickCombination2 implements Spinner.OnItemSelectedListener{
+        @Override
+        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+            for(int x = 0; x < allCombinations.size(); x++){
+                if(allCombinations.get(x).getName() == myArraySpinner2.get(position)){
+                    combinationSelected = x;
+                }
+            }
+        }
+        @Override
+        public void onNothingSelected(AdapterView<?> parentView) {
+            // your code here
+        }
+    }
+
     private class WaitingScreen implements ImageView.OnClickListener{
         @Override
         public void onClick(View v) {
